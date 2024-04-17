@@ -4,17 +4,6 @@ from sklearn.metrics import accuracy_score
 from Model import Model_CNN_IR
 from Dataset import load_storage
 
-# Fungsi untuk menyerialisasi contoh ke format TFRecord
-def serialize_example(feature, label):
-    # Membuat dictionary untuk feature dan label
-    feature_dict = {
-        'feature': tf.train.Feature(float_list=tf.train.FloatList(value=feature.flatten())),
-        'label': tf.train.Feature(int64_list=tf.train.Int64List(value=[label])),
-    }
-    # Membuat example
-    example = tf.train.Example(features=tf.train.Features(feature=feature_dict))
-    return example.SerializeToString()
-
 # Main script
 if __name__ == '__main__':
     # Objek dataset
@@ -42,15 +31,3 @@ if __name__ == '__main__':
     accuracy_test = accuracy_score(load.y_test, pred_test)
     print("akurasi terhadap data test = ", accuracy_test)
     print("---------------------------------------------")
-
-    with tf.io.TFRecordWriter('train_data.tfrecord') as writer:
-        for feature, label in zip(load.x_train, load.y_train):
-            example = serialize_example(feature.numpy(), label.numpy())
-            writer.write(example)
-    print("Data latih disimpan dalam file 'train_data.tfrecord'")
-
-    with tf.io.TFRecordWriter('test_data.tfrecord') as writer:
-        for feature, label in zip(load.x_test, load.y_test):
-            example = serialize_example(feature.numpy(), label.numpy())
-            writer.write(example)
-    print("Data uji disimpan dalam file 'test_data.tfrecord'")
